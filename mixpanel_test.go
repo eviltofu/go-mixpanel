@@ -1,6 +1,7 @@
 package mixpanel
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 	"testing"
@@ -18,42 +19,42 @@ func TestCreation(t *testing.T) {
 
 func TestTrackEventOnly(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventOnly("Test TrackEventOnly"); !success {
+	if err := mixpanel.TrackEventOnly("Test TrackEventOnly"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTrackEventWithParameters(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventWithParameters("Test TrackEventWithParameters", parameters()); !success {
+	if err := mixpanel.TrackEventWithParameters("Test TrackEventWithParameters", parameters()); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTrackEventForUser(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventForUser("Test TrackEventForUser", "User 0001"); !success {
+	if err := mixpanel.TrackEventForUser("Test TrackEventForUser", "User 0001"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTrackEventForUserWithParameters(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventForUserWithParameters("Test TrackEventForUserWithParameters", "User 0001", parameters()); !success {
+	if err := mixpanel.TrackEventForUserWithParameters("Test TrackEventForUserWithParameters", "User 0001", parameters()); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTrackEventForUserFromIP(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventForUserFromIP("Test TrackEventForUserFromIP", "User 0001", "64.2.4.1"); !success {
+	if err := mixpanel.TrackEventForUserFromIP("Test TrackEventForUserFromIP", "User 0001", "64.2.4.1"); err != nil {
 		t.Error(err)
 	}
 }
 
 func TestTrackEventForUserFromIPWithParameters(t *testing.T) {
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.TrackEventForUserFromIPWithParameters("Test TrackEventForUserFromIPWithParameters", "User 0001", "123.234.5.2", parameters()); !success {
+	if err := mixpanel.TrackEventForUserFromIPWithParameters("Test TrackEventForUserFromIPWithParameters", "User 0001", "123.234.5.2", parameters()); err != nil {
 		t.Error(err)
 	}
 }
@@ -82,7 +83,7 @@ func TestProfileSet(t *testing.T) {
 		"$phone":      "6500000000",
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
 	}
 }
@@ -100,13 +101,14 @@ func TestProfileSetOnce(t *testing.T) {
 		"fun":         1,
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var moreProperties = map[string]interface{}{
 		"fun": 2,
 	}
-	if success, err := mixpanel.ProfileSetOnce(distinctID, moreProperties); !success {
+	if err := mixpanel.ProfileSetOnce(distinctID, moreProperties); err != nil {
 		t.Error(err)
 	}
 }
@@ -121,19 +123,21 @@ func TestProfileAdd(t *testing.T) {
 		"$phone":   "6500000002",
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var addProperties = map[string]int64{
 		"add": 5,
 	}
-	if success, err := mixpanel.ProfileAdd(distinctID, addProperties); !success {
+	if err := mixpanel.ProfileAdd(distinctID, addProperties); err != nil {
 		t.Error(err)
+		return
 	}
 	var minusProperties = map[string]int64{
 		"minus": -5,
 	}
-	if success, err := mixpanel.ProfileAdd(distinctID, minusProperties); !success {
+	if err := mixpanel.ProfileAdd(distinctID, minusProperties); err != nil {
 		t.Error(err)
 	}
 }
@@ -152,14 +156,15 @@ func TestProfileAppend(t *testing.T) {
 		"hobbies":     []string{"cats", "dogs", "fish"},
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var moreProperties = map[string]interface{}{
 		"hobbies": []string{"cats", "dogs", "rabbits"},
 		"movies":  []string{"movie 1", "movie 2"},
 	}
-	if success, err := mixpanel.ProfileAppend(distinctID, moreProperties); !success {
+	if err := mixpanel.ProfileAppend(distinctID, moreProperties); err != nil {
 		t.Error(err)
 	}
 }
@@ -178,14 +183,15 @@ func TestProfileUnion(t *testing.T) {
 		"hobbies":     []string{"cats", "dogs", "fish"},
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var moreProperties = map[string]interface{}{
 		"hobbies": []string{"cats", "dogs", "rabbits"},
 		"movies":  []string{"movie 1", "movie 2"},
 	}
-	if success, err := mixpanel.ProfileUnion(distinctID, moreProperties); !success {
+	if err := mixpanel.ProfileUnion(distinctID, moreProperties); err != nil {
 		t.Error(err)
 	}
 }
@@ -203,14 +209,16 @@ func TestProfileRemove(t *testing.T) {
 		"hobbies":     []string{"cats", "dogs", "fish"},
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var moreProperties = map[string]interface{}{
 		"hobbies": "cats",
 	}
-	if success, err := mixpanel.ProfileRemove(distinctID, moreProperties); !success {
+	if err := mixpanel.ProfileRemove(distinctID, moreProperties); err != nil {
 		t.Error(err)
+		return
 	}
 }
 
@@ -229,11 +237,12 @@ func TestProfileUnset(t *testing.T) {
 		"friends":     []string{"me", "you"},
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	var moreProperties = []string{"movies", "hobbies"}
-	if success, err := mixpanel.ProfileUnset(distinctID, moreProperties); !success {
+	if err := mixpanel.ProfileUnset(distinctID, moreProperties); err != nil {
 		t.Error(err)
 	}
 }
@@ -247,22 +256,24 @@ func TestProfileDelete(t *testing.T) {
 		"$name":       distinctID,
 		"$created":    CurrentTimeString(),
 		"$email":      "Delete.email@someplace.com",
-		"$phone":      "6500000006",
+		"$phone":      "6500000007",
 		"hobbies":     []string{"cats", "dogs", "fish"},
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
 	time.Sleep(5 * time.Second)
-	if success, err := mixpanel.ProfileDelete(distinctID); !success {
+	if err := mixpanel.ProfileDelete(distinctID); err != nil {
 		t.Error(err)
 	}
 }
 
 func uniqueID(label string) string {
-	time.Sleep(1 * time.Second)
-	return "user " + strconv.FormatInt(time.Now().Unix(), 16) + "->" + label
+	var result = "user " + strconv.FormatInt(time.Now().Unix(), 16) + "->" + label
+	fmt.Println(result)
+	return result
 }
 
 func TestProfilePropertyIncrement(t *testing.T) {
@@ -273,26 +284,60 @@ func TestProfilePropertyIncrement(t *testing.T) {
 		"$name":       distinctID,
 		"$created":    CurrentTimeString(),
 		"$email":      "Delete.email@someplace.com",
-		"$phone":      "6500000006",
+		"$phone":      "6500000008",
 		"a":           0,
 		"b":           0,
 		"c":           0,
 		"d":           0,
 	}
 	var mixpanel = NewMixPanel(ValidTestToken)
-	if success, err := mixpanel.ProfileSet(distinctID, properties); !success {
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := mixpanel.ProfilePropertyIncrement(distinctID, "a"); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := mixpanel.ProfilePropertyIncrementBy(distinctID, "b", 20); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := mixpanel.ProfilePropertyDecrement(distinctID, "c"); err != nil {
+		t.Error(err)
+		return
+	}
+	if err := mixpanel.ProfilePropertyDecrementBy(distinctID, "d", 50); err != nil {
 		t.Error(err)
 	}
-	if success, err := mixpanel.ProfilePropertyIncrement(distinctID, "a"); !success {
-		t.Error(err)
+}
+
+// TestProfileProfileAddRevenueTransaction Total Revenue = 28.25
+func TestProfileProfileAddRevenueTransaction(t *testing.T) {
+	var distinctID = uniqueID("TestProfileProfileAddRevenueTransaction")
+	var properties = map[string]interface{}{
+		"$first_name": "AddRevenueTransaction",
+		"$last_name":  "AddRevenueTransaction",
+		"$name":       distinctID,
+		"$created":    CurrentTimeString(),
+		"$email":      "AddRevenueTransaction.email@someplace.com",
+		"$phone":      "6500000009",
 	}
-	if success, err := mixpanel.ProfilePropertyIncrementBy(distinctID, "b", 20); !success {
+	var mixpanel = NewMixPanel(ValidTestToken)
+	if err := mixpanel.ProfileSet(distinctID, properties); err != nil {
 		t.Error(err)
+		return
 	}
-	if success, err := mixpanel.ProfilePropertyDecrement(distinctID, "c"); !success {
+	if err := mixpanel.ProfileAddRevenueTransaction(distinctID, time.Now(), "Apple 0001", 12.50); err != nil {
 		t.Error(err)
+		return
 	}
-	if success, err := mixpanel.ProfilePropertyDecrementBy(distinctID, "d", 50); !success {
+	if err := mixpanel.ProfileAddRevenueTransaction(distinctID, time.Now(), "Google 0002", 13.25); err != nil {
 		t.Error(err)
+		return
+	}
+	if err := mixpanel.ProfileAddRevenueTransaction(distinctID, time.Now(), "IBM 0003", 2.50); err != nil {
+		t.Error(err)
+		return
 	}
 }
